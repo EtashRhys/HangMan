@@ -1,1 +1,200 @@
+import random
+import pygame
+
+# Initialize Pygame
+pygame.init()
+
+# Screen setup for full screen
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
+pygame.display.set_caption("Modern Hangman")
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+ORANGE = (255, 165, 0)
+GRAY = (169, 169, 169)
+
+# Font setup
+font = pygame.font.Font(None, 72)
+button_font = pygame.font.Font(None, 48)
+
+# Word list with 150 additional words
+words = [
+    'python', 'programming', 'algorithm', 'database', 'network', 'computer',
+    'science', 'interface', 'function', 'variable', 'loop', 'condition',
+    'module', 'library', 'data', 'structure', 'object', 'class', 'inheritance',
+    'polymorphism', 'encapsulation', 'abstraction', 'dictionary', 'list',
+    'tuple', 'set', 'string', 'integer', 'float', 'boolean', 'method',
+    'attribute', 'exception', 'debugging', 'syntax', 'compiler', 'interpreter',
+    'virtual', 'environment', 'code', 'robotics', 'cybersecurity', 'artificial',
+    'intelligence', 'machine', 'learning', 'neural', 'network', 'quantum',
+    'physics', 'relativity', 'gravity', 'momentum', 'electricity', 'magnetism',
+    'cell', 'membrane', 'biology', 'evolution', 'genetics', 'photosynthesis',
+    'ecosystem', 'biodiversity', 'planet', 'meteor', 'asteroid', 'galaxy',
+    'cosmos', 'universe', 'orbit', 'eclipse', 'satellite', 'telescope',
+    'microscope', 'experiment', 'hypothesis', 'variable', 'analysis', 'calculus',
+    'geometry', 'trigonometry', 'statistics', 'probability', 'prime', 'factor',
+    'algebra', 'parabola', 'matrix', 'determinant', 'vector', 'scalar', 'force',
+    'torque', 'wave', 'frequency', 'amplitude', 'resonance', 'spectrum',
+    'diffraction', 'interference', 'chromosome', 'protein', 'enzyme', 'hormone',
+    'vaccine', 'antibody', 'pandemic', 'symptom', 'diagnosis', 'treatment',
+    'therapy', 'radiation', 'chemistry', 'reaction', 'compound', 'element',
+    'periodic', 'table', 'molecule', 'bond', 'isotope', 'electron', 'proton',
+    'neutron', 'energy', 'conservation', 'entropy', 'kinetics', 'equilibrium',
+    'solution', 'solvent', 'solute', 'acidity', 'alkalinity', 'buffer', 'titration',
+    'oxidation', 'reduction', 'current', 'voltage', 'resistance', 'circuit',
+    'amplifier', 'signal', 'processor', 'transistor', 'capacitor', 'inductor',
+    'diode', 'semiconductor', 'nanotechnology', 'biotechnology', 'genomics',
+    'proteomics', 'metabolomics', 'ecology', 'climate', 'weather', 'hurricane',
+    'earthquake', 'volcano', 'tsunami', 'erosion', 'pollution', 'conservation',
+    'sustainability', 'renewable', 'geothermal', 'hydropower', 'wind', 'solar',
+    'biofuel', 'carbon', 'footprint', 'emission', 'recycle', 'upcycle',
+    'innovation', 'entrepreneur', 'startup', 'blockchain', 'cryptocurrency',
+    'bitcoin', 'ethereum', 'smart', 'contract', 'ledger', 'mining', 'wallet',
+    'token', 'metaverse', 'virtual', 'augmented', 'reality', 'simulation', 'game',
+    'design', 'interface', 'interaction', 'experience', 'strategy', 'tactic',
+    'analytics', 'dashboard', 'visualization', 'insight', 'predictive', 'modeling',
+    'automation', 'algorithmic', 'trading', 'quantitative', 'risk', 'management',
+    'portfolio', 'investment', 'equity', 'bond', 'commodity', 'derivative',
+    'hedging', 'arbitrage', 'leverage', 'dividend', 'yield', 'market', 'analysis',
+    'valuation', 'discounted', 'cash', 'flow', 'earnings', 'growth', 'profit',
+    'margin', 'revenue', 'expense', 'balance', 'sheet', 'asset', 'liability',
+    'equity', 'shareholder', 'return', 'capital', 'investment', 'finance', 'economics',
+    'macroeconomics', 'microeconomics', 'supply', 'demand', 'inflation', 'deflation',
+    'recession', 'recovery', 'stability', 'instability', 'policy', 'regulation',
+    'governance', 'ethics', 'morality', 'justice', 'fairness', 'equality', 'diversity',
+    'inclusion', 'equity', 'accessibility', 'universal', 'design', 'empathy',
+    'sympathy', 'compassion', 'altruism', 'kindness', 'generosity', 'gratitude',
+    'humility', 'integrity', 'honesty', 'trust', 'respect', 'loyalty', 'friendship',
+    'relationship', 'communication', 'understanding', 'collaboration', 'teamwork',
+    'partnership', 'leadership', 'inspiration', 'motivation', 'creativity', 'innovation',
+    'vision', 'mission', 'purpose', 'goal', 'achievement', 'success', 'failure',
+    'challenge', 'opportunity', 'learning', 'growth', 'development', 'skill',
+    'competency', 'expertise', 'experience', 'knowledge', 'wisdom', 'intelligence',
+    'curiosity', 'passion', 'enthusiasm', 'energy', 'focus', 'concentration',
+    'determination', 'perseverance', 'resilience', 'adaptability', 'flexibility',
+    'versatility', 'diversity', 'inclusion', 'belonging', 'community', 'culture'
+]
+
+# Hangman parts
+def draw_hangman(screen, wrong_guesses):
+    x, y = SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4
+    if wrong_guesses > 0:
+        if wrong_guesses >= 1:
+            pygame.draw.circle(screen, WHITE, (x, y), 60)
+        if wrong_guesses >= 2:
+            pygame.draw.line(screen, WHITE, (x, y + 60), (x, y + 300), 10)
+        if wrong_guesses >= 3:
+            pygame.draw.line(screen, WHITE, (x, y + 100), (x - 100, y + 200), 10)
+        if wrong_guesses >= 4:
+            pygame.draw.line(screen, WHITE, (x, y + 100), (x + 100, y + 200), 10)
+        if wrong_guesses >= 5:
+            pygame.draw.line(screen, WHITE, (x, y + 300), (x - 100, y + 400), 10)
+        if wrong_guesses >= 6:
+            pygame.draw.line(screen, WHITE, (x, y + 300), (x + 100, y + 400), 10)
+
+def display_word(word, guessed):
+    return " ".join([letter if letter in guessed else "_" for letter in word])
+
+def draw_button(screen, text, position, size, color=ORANGE):
+    button_rect = pygame.Rect(position, size)
+    pygame.draw.rect(screen, color, button_rect)
+    text_surface = button_font.render(text, True, BLACK)
+    text_rect = text_surface.get_rect(center=button_rect.center)
+    screen.blit(text_surface, text_rect)
+    return button_rect
+
+def main():
+    def reset_game():
+        nonlocal word, guessed_letters, wrong_guesses, game_over
+        word = random.choice(words).lower()
+        guessed_letters = set()
+        wrong_guesses = 0
+        game_over = False
+
+    # Initialize game variables
+    word = random.choice(words).lower()
+    guessed_letters = set()
+    wrong_guesses = 0
+    game_over = False
+
+    # Button layout for all 26 letters
+    button_positions = []
+    button_size = (80, 80)
+    padding = 10
+    rows = 4  # Number of rows for buttons
+    cols = 7  # Maximum number of columns
+
+    for i in range(26):
+        row = i // cols
+        col = i % cols
+        x = 40 + col * (button_size[0] + padding)
+        y = SCREEN_HEIGHT - (rows - row) * (button_size[1] + padding)
+        button_positions.append((x, y))
+
+    # New Game button
+    new_game_button_pos = (SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + 200)
+    new_game_button_size = (300, 80)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if game_over:
+                    new_game_button = draw_button(
+                        screen, "New Game", new_game_button_pos, new_game_button_size
+                    )
+                    if new_game_button.collidepoint(event.pos):
+                        reset_game()
+                else:
+                    for i, position in enumerate(button_positions):
+                        button = draw_button(screen, chr(ord('A') + i), position, button_size)
+                        if button.collidepoint(event.pos):
+                            letter = chr(ord('A') + i).lower()
+                            if letter not in guessed_letters:
+                                guessed_letters.add(letter)
+                                if letter not in word:
+                                    wrong_guesses += 1
+
+        # Drawing
+        screen.fill(BLACK)
+        pygame.draw.rect(screen, ORANGE, (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), 20)
+
+        # Display hangman
+        draw_hangman(screen, wrong_guesses)
+
+        # Display the word
+        word_display = font.render(display_word(word, guessed_letters), True, WHITE)
+        screen.blit(word_display, (SCREEN_WIDTH // 2 - word_display.get_width() // 2, SCREEN_HEIGHT // 2 - 200))
+
+        # Display guessed letters
+        guessed_display = font.render("Guessed: " + ", ".join(sorted(guessed_letters)), True, WHITE)
+        screen.blit(guessed_display, (SCREEN_WIDTH // 2 - guessed_display.get_width() // 2, SCREEN_HEIGHT // 2 - 100))
+
+        # Draw the on-screen keyboard
+        if not game_over:
+            for i, position in enumerate(button_positions):
+                draw_button(screen, chr(ord('A') + i), position, button_size)
+
+        # Check game state
+        if wrong_guesses >= 6:
+            result = font.render("Game Over! The word was: " + word, True, WHITE)
+            screen.blit(result, (SCREEN_WIDTH // 2 - result.get_width() // 2, SCREEN_HEIGHT // 2 + 100))
+            game_over = True
+        elif set(word).issubset(guessed_letters):
+            result = font.render("You win! The word was: " + word, True, WHITE)
+            screen.blit(result, (SCREEN_WIDTH // 2 - result.get_width() // 2, SCREEN_HEIGHT // 2 + 100))
+            game_over = True
+
+        # Draw New Game button if the game is over
+        if game_over:
+            draw_button(screen, "New Game", new_game_button_pos, new_game_button_size)
+
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    main()
 
